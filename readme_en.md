@@ -46,7 +46,7 @@ gin + jwt-go + websocket + go.uuid + gorm + cobra + VueJS + ElementUI + MySQL
    
    go env -w GOPROXY=https://goproxy.cn,direct
    
-   git clone https://github.com/taoshihan1991/go-fly.git
+   git clone https://github.com/456vv/go-fly.git
    
    go run go-fly.go install
    

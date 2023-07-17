@@ -1,2 +1,4 @@
 .idea
 imaptool.exe
+.history
+*.code-workspace

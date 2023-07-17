@@ -3,16 +3,17 @@ package controller
 import (
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
-	"github.com/taoshihan1991/imaptool/common"
-	"github.com/taoshihan1991/imaptool/models"
-	"github.com/taoshihan1991/imaptool/tools"
-	"github.com/taoshihan1991/imaptool/ws"
 	"io/ioutil"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
+	"imaptool/common"
+	"imaptool/models"
+	"imaptool/tools"
+	"imaptool/ws"
 )
 
 func PostInstall(c *gin.Context) {
@@ -73,6 +74,7 @@ func PostInstall(c *gin.Context) {
 		"msg":  "安装成功",
 	})
 }
+
 func install() (bool, error) {
 	sqlFile := common.Dir + "go-fly.sql"
 	isExit, _ := tools.IsFileExist(common.MysqlConf)
@@ -95,6 +97,7 @@ func install() (bool, error) {
 	}
 	return true, nil
 }
+
 func MainCheckAuth(c *gin.Context) {
 	id, _ := c.Get("kefu_id")
 	userinfo := models.FindUserRole("user.avator,user.name,user.id, role.name role_name", id)
@@ -108,9 +111,10 @@ func MainCheckAuth(c *gin.Context) {
 		},
 	})
 }
+
 func GetStatistics(c *gin.Context) {
 	visitors := models.CountVisitors()
-	message := models.CountMessage(nil,nil)
+	message := models.CountMessage(nil, nil)
 	session := len(ws.ClientList)
 	kefuNum := 0
 	c.JSON(200, gin.H{

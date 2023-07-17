@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"github.com/taoshihan1991/imaptool/models"
-	"github.com/taoshihan1991/imaptool/tools"
+	"imaptool/models"
+	"imaptool/tools"
 )
 
 func CheckKefuPass(username string, password string) (models.User, models.User_role, bool) {

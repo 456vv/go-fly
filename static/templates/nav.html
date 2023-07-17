@@ -1,10 +1,5 @@
 {{define "nav"}}
     <div class="mainLeftMenu">
-        <div style="margin: 20px auto;">
-            <el-badge :type="onlineType" is-dot class="item">
-                <el-avatar   class="mainLogo"  title="智能客服" :size="45" src="/static/images/1.jpg"></el-avatar>
-            </el-badge>
-        </div>
         <div style="display: none" class="menuLeftItem" v-on:click="openIframeUrl('/mainGuide')">
             <i class="el-icon-house"></i>
             <span slot="title">首页</span>

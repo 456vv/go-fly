@@ -1,9 +1,10 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/taoshihan1991/imaptool/models"
 	"log"
+
+	"github.com/gin-gonic/gin"
+	"imaptool/models"
 )
 
 type ReplyForm struct {
@@ -25,6 +26,7 @@ func GetReplys(c *gin.Context) {
 		"result": res,
 	})
 }
+
 func GetAutoReplys(c *gin.Context) {
 	kefu_id := c.Query("kefu_id")
 	res := models.FindReplyTitleByUserId(kefu_id)
@@ -34,6 +36,7 @@ func GetAutoReplys(c *gin.Context) {
 		"result": res,
 	})
 }
+
 func PostReply(c *gin.Context) {
 	var replyForm ReplyForm
 	kefuId, _ := c.Get("kefu_name")
@@ -51,6 +54,7 @@ func PostReply(c *gin.Context) {
 		"msg":  "ok",
 	})
 }
+
 func PostReplyContent(c *gin.Context) {
 	var replyContentForm ReplyContentForm
 	kefuId, _ := c.Get("kefu_name")
@@ -68,6 +72,7 @@ func PostReplyContent(c *gin.Context) {
 		"msg":  "ok",
 	})
 }
+
 func PostReplyContentSave(c *gin.Context) {
 	kefuId, _ := c.Get("kefu_name")
 	replyId := c.PostForm("reply_id")
@@ -86,6 +91,7 @@ func PostReplyContentSave(c *gin.Context) {
 		"msg":  "ok",
 	})
 }
+
 func DelReplyContent(c *gin.Context) {
 	kefuId, _ := c.Get("kefu_name")
 	id := c.Query("id")
@@ -95,6 +101,7 @@ func DelReplyContent(c *gin.Context) {
 		"msg":  "ok",
 	})
 }
+
 func DelReplyGroup(c *gin.Context) {
 	kefuId, _ := c.Get("kefu_name")
 	id := c.Query("id")
@@ -104,6 +111,7 @@ func DelReplyGroup(c *gin.Context) {
 		"msg":  "ok",
 	})
 }
+
 func PostReplySearch(c *gin.Context) {
 	kefuId, _ := c.Get("kefu_name")
 	search := c.PostForm("search")

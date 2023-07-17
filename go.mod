@@ -1,4 +1,4 @@
-module github.com/taoshihan1991/imaptool
+module imaptool
 
 go 1.16
 

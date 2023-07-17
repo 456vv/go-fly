@@ -1,11 +1,13 @@
 package tmpl
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/taoshihan1991/imaptool/models"
 	"html"
 	"html/template"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+
+	"imaptool/models"
 )
 
 func PageDetail(c *gin.Context) {

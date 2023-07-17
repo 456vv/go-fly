@@ -1,10 +1,11 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/taoshihan1991/imaptool/common"
-	"github.com/taoshihan1991/imaptool/models"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"imaptool/common"
+	"imaptool/models"
 )
 
 func PostIpblack(c *gin.Context) {
@@ -23,6 +24,7 @@ func PostIpblack(c *gin.Context) {
 		"msg":  "添加黑名单成功!",
 	})
 }
+
 func DelIpblack(c *gin.Context) {
 	ip := c.Query("ip")
 	if ip == "" {
@@ -38,6 +40,7 @@ func DelIpblack(c *gin.Context) {
 		"msg":  "删除黑名单成功!",
 	})
 }
+
 func GetIpblacks(c *gin.Context) {
 	page, _ := strconv.Atoi(c.Query("page"))
 	if page == 0 {
@@ -55,6 +58,7 @@ func GetIpblacks(c *gin.Context) {
 		},
 	})
 }
+
 func GetIpblacksByKefuId(c *gin.Context) {
 	kefuId, _ := c.Get("kefu_name")
 	list := models.FindIpsByKefuId(kefuId.(string))

@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/taoshihan1991/imaptool/models"
+	"imaptool/models"
 )
 
 func Ipblack(c *gin.Context) {

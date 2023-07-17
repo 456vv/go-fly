@@ -3,6 +3,7 @@ new Vue({
     el: '#app',
     delimiters:["<{","}>"],
     data: {
+        qqMap: false,
         window:window,
         server:getWsBaseUrl()+"/ws_visitor",
         socket:null,
@@ -531,8 +532,29 @@ new Vue({
         },
     },
     mounted:function() {
-        document.addEventListener('paste', this.onPasteUpload)
-        document.addEventListener('scroll',this.textareaBlur)
+            var _this = this;
+            document.addEventListener('paste', this.onPasteUpload);
+            document.addEventListener('scroll', this.textareaBlur);
+            window.addEventListener('message', function (e) {
+                var msg = e.data;
+                if (msg.module && msg.module == "locationPicker") {
+                    _this.qqMap = false;
+                    console.log('location', msg);
+                    var address = "<a target='_blank' href='https://apis.map.qq.com/tools/poimarker?type=0&marker=coord:" + msg.latlng.lat + "," + msg.latlng.lng + "&key=OB4BZ-D4W3U-B7VVO-4PJWW-6TKDJ-WPB77&referer=myapp'>" + msg.poiname + "：" + msg.poiaddress + "</a>"
+                    _this.messageContent = address;
+                    _this.chatToUser();
+                }
+                if (msg.type == "inputing_message") {
+                    _this.sendInputingStrNow(msg.content);
+                }
+                if (msg.type == "send_message") {
+                    _this.messageContent = msg.content;
+                    _this.chatToUser();
+                }
+            });
+            window.onbeforeunload = function (e) {
+                if (_this.isCalling) _this.callClose();
+            };
     },
     created: function () {
         this.init();

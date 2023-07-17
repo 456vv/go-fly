@@ -4,13 +4,12 @@ import (
 	"github.com/dchest/captcha"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/taoshihan1991/imaptool/models"
-	"github.com/taoshihan1991/imaptool/tools"
-	"github.com/taoshihan1991/imaptool/ws"
+	"imaptool/models"
+	"imaptool/tools"
+	"imaptool/ws"
 )
 
 func PostKefuAvator(c *gin.Context) {
-
 	avator := c.PostForm("avator")
 	if avator == "" {
 		c.JSON(200, gin.H{
@@ -28,6 +27,7 @@ func PostKefuAvator(c *gin.Context) {
 		"result": "",
 	})
 }
+
 func PostKefuPass(c *gin.Context) {
 	kefuName, _ := c.Get("kefu_name")
 	newPass := c.PostForm("new_pass")
@@ -57,6 +57,7 @@ func PostKefuPass(c *gin.Context) {
 		"result": "",
 	})
 }
+
 func PostKefuClient(c *gin.Context) {
 	kefuName, _ := c.Get("kefu_name")
 	clientId := c.PostForm("client_id")
@@ -75,6 +76,7 @@ func PostKefuClient(c *gin.Context) {
 		"result": "",
 	})
 }
+
 func GetKefuInfo(c *gin.Context) {
 	kefuId, _ := c.Get("kefu_id")
 	user := models.FindUserById(kefuId)
@@ -91,6 +93,7 @@ func GetKefuInfo(c *gin.Context) {
 		"result": info,
 	})
 }
+
 func GetKefuInfoAll(c *gin.Context) {
 	id, _ := c.Get("kefu_id")
 	userinfo := models.FindUserRole("user.avator,user.name,user.id, role.name role_name", id)
@@ -100,6 +103,7 @@ func GetKefuInfoAll(c *gin.Context) {
 		"result": userinfo,
 	})
 }
+
 func GetOtherKefuList(c *gin.Context) {
 	idStr, _ := c.Get("kefu_id")
 	id := idStr.(float64)
@@ -128,6 +132,7 @@ func GetOtherKefuList(c *gin.Context) {
 		"result": result,
 	})
 }
+
 func PostTransKefu(c *gin.Context) {
 	kefuId := c.Query("kefu_id")
 	visitorId := c.Query("visitor_id")
@@ -151,6 +156,7 @@ func PostTransKefu(c *gin.Context) {
 		"msg":  "转移成功",
 	})
 }
+
 func GetKefuInfoSetting(c *gin.Context) {
 	kefuId := c.Query("kefu_id")
 	user := models.FindUserById(kefuId)
@@ -160,6 +166,7 @@ func GetKefuInfoSetting(c *gin.Context) {
 		"result": user,
 	})
 }
+
 func PostKefuRegister(c *gin.Context) {
 	name := c.PostForm("name")
 	password := c.PostForm("password")
@@ -213,7 +220,7 @@ func PostKefuRegister(c *gin.Context) {
 		})
 		return
 	}
-	//插入新用户
+	// 插入新用户
 	uid := models.CreateUser(name, tools.Md5(password), avator, nickname)
 	if uid == 0 {
 		c.JSON(200, gin.H{
@@ -231,6 +238,7 @@ func PostKefuRegister(c *gin.Context) {
 		"result": "",
 	})
 }
+
 func PostKefuInfo(c *gin.Context) {
 	id := c.PostForm("id")
 	name := c.PostForm("name")
@@ -244,7 +252,7 @@ func PostKefuInfo(c *gin.Context) {
 		})
 		return
 	}
-	//插入新用户
+	// 插入新用户
 	if id == "" {
 		uid := models.CreateUser(name, tools.Md5(password), avator, nickname)
 		if uid == 0 {
@@ -256,18 +264,31 @@ func PostKefuInfo(c *gin.Context) {
 			return
 		}
 	} else {
-		//更新用户
+		// 更新用户
 		if password != "" {
 			password = tools.Md5(password)
 		}
-		message := &models.Message{
+		models.DB.Model(&models.Message{}).Update(&models.Message{
 			KefuId: name,
-		}
-		models.DB.Model(&models.Message{}).Update(message)
-		visitor := &models.Visitor{
+		})
+		models.DB.Model(&models.Visitor{}).Update(&models.Visitor{
 			ToId: name,
-		}
-		models.DB.Model(&models.Visitor{}).Update(visitor)
+		})
+		models.DB.Model(&models.ReplyGroup{}).Update(&models.ReplyGroup{
+			UserId: name,
+		})
+		models.DB.Model(&models.ReplyItem{}).Update(&models.ReplyItem{
+			UserId: name,
+		})
+		models.DB.Model(&models.Welcome{}).Update(&models.Welcome{
+			UserId: name,
+		})
+		models.DB.Model(&models.User{}).Update(&models.User{
+			Name:     name,
+			Avator:   avator,
+			Password: password,
+			Nickname: nickname,
+		})
 	}
 
 	c.JSON(200, gin.H{
@@ -276,6 +297,7 @@ func PostKefuInfo(c *gin.Context) {
 		"result": "",
 	})
 }
+
 func GetKefuList(c *gin.Context) {
 	users := models.FindUsers()
 	c.JSON(200, gin.H{
@@ -284,6 +306,7 @@ func GetKefuList(c *gin.Context) {
 		"result": users,
 	})
 }
+
 func DeleteKefuInfo(c *gin.Context) {
 	kefuId := c.Query("id")
 	models.DeleteUserById(kefuId)

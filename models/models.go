@@ -2,10 +2,11 @@ package models
 
 import (
 	"fmt"
-	"github.com/jinzhu/gorm"
-	"github.com/taoshihan1991/imaptool/common"
-	"log"
 	"time"
+
+	"imaptool/common"
+
+	"github.com/jinzhu/gorm"
 )
 
 var DB *gorm.DB
@@ -17,17 +18,14 @@ type Model struct {
 	DeletedAt *time.Time `sql:"index" json:"deleted_at"`
 }
 
-func init() {
-	Connect()
-}
 func Connect() error {
-	mysql := common.GetMysqlConf()
+	mysql, err := common.GetMysqlConf()
+	if err != nil {
+		return err
+	}
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", mysql.Username, mysql.Password, mysql.Server, mysql.Port, mysql.Database)
-	var err error
 	DB, err = gorm.Open("mysql", dsn)
 	if err != nil {
-		log.Println(err)
-		panic("数据库连接失败!")
 		return err
 	}
 	DB.SingularTable(true)
@@ -38,9 +36,11 @@ func Connect() error {
 	InitConfig()
 	return nil
 }
+
 func Execute(sql string) error {
 	return DB.Exec(sql).Error
 }
+
 func CloseDB() {
 	defer DB.Close()
 }

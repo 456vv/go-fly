@@ -1,20 +1,23 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
-	"github.com/taoshihan1991/imaptool/common"
-	"github.com/taoshihan1991/imaptool/models"
-	"github.com/taoshihan1991/imaptool/tools"
 	"io/ioutil"
 	"log"
 	"os"
 	"strings"
+
+	"imaptool/common"
+	"imaptool/models"
+	"imaptool/tools"
+
+	"github.com/spf13/cobra"
 )
 
 var installCmd = &cobra.Command{
 	Use:   "install",
 	Short: "安装导入数据",
 	Run: func(cmd *cobra.Command, args []string) {
+		ready()
 		install()
 	},
 }

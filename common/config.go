@@ -2,7 +2,6 @@ package common
 
 import (
 	"encoding/json"
-	"github.com/taoshihan1991/imaptool/tools"
 	"io/ioutil"
 )
 
@@ -14,16 +13,13 @@ type Mysql struct {
 	Password string
 }
 
-func GetMysqlConf() *Mysql {
+func GetMysqlConf() (*Mysql, error) {
 	var mysql = &Mysql{}
-	isExist, _ := tools.IsFileExist(MysqlConf)
-	if !isExist {
-		return mysql
-	}
+	
 	info, err := ioutil.ReadFile(MysqlConf)
 	if err != nil {
-		return mysql
+		return nil, err
 	}
 	err = json.Unmarshal(info, mysql)
-	return mysql
+	return mysql, err
 }

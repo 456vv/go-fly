@@ -1,9 +1,10 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/taoshihan1991/imaptool/tools"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"imaptool/tools"
 )
 
 func NewMidLogger() gin.HandlerFunc {
@@ -33,7 +34,7 @@ func NewMidLogger() gin.HandlerFunc {
 		// 请求IP
 		clientIP := c.ClientIP()
 
-		//日志格式
+		// 日志格式
 		logger.Infof("| %3d | %13v | %15s | %s | %s |",
 			statusCode,
 			latencyTime,

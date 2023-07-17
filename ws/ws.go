@@ -3,15 +3,17 @@ package ws
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
-	"github.com/taoshihan1991/imaptool/models"
-	"github.com/taoshihan1991/imaptool/tools"
 	"log"
 	"net/http"
 	"strconv"
 	"sync"
 	"time"
+
+	"imaptool/models"
+	"imaptool/tools"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 type User struct {
@@ -50,11 +52,13 @@ type ClientMessage struct {
 	IsKefu    string `json:"is_kefu"`
 }
 
-var ClientList = make(map[string]*User)
-var KefuList = make(map[string]*User)
-var message = make(chan *Message, 10)
-var upgrader = websocket.Upgrader{}
-var Mux sync.RWMutex
+var (
+	ClientList = make(map[string]*User)
+	KefuList   = make(map[string]*User)
+	message    = make(chan *Message, 10)
+	upgrader   = websocket.Upgrader{}
+	Mux        sync.RWMutex
+)
 
 func init() {
 	upgrader = websocket.Upgrader{
@@ -65,8 +69,8 @@ func init() {
 			return true
 		},
 	}
-	go UpdateVisitorStatusCron()
 }
+
 func SendServerJiang(title string, content string, domain string) string {
 	noticeServerJiang, err := strconv.ParseBool(models.FindConfig("NoticeServerJiang"))
 	serverJiangAPI := models.FindConfig("ServerJiangAPI")
@@ -77,15 +81,16 @@ func SendServerJiang(title string, content string, domain string) string {
 	sendStr := fmt.Sprintf("%s%s", title, content)
 	desp := title + ":" + content + "[登录](http://" + domain + "/main)"
 	url := serverJiangAPI + "?text=" + sendStr + "&desp=" + desp
-	//log.Println(url)
+	// log.Println(url)
 	res := tools.Get(url)
 	return res
 }
+
 func SendFlyServerJiang(title string, content string, domain string) string {
 	return ""
 }
 
-//定时给更新数据库状态
+// 定时给更新数据库状态
 func UpdateVisitorStatusCron() {
 	for {
 		visitors := models.FindVisitorsOnline()
@@ -103,7 +108,7 @@ func UpdateVisitorStatusCron() {
 	}
 }
 
-//后端广播发送消息
+// 后端广播发送消息
 func WsServerBackend() {
 	for {
 		message := <-message
@@ -117,7 +122,7 @@ func WsServerBackend() {
 		log.Println("客户端:", string(message.content))
 
 		switch msgType {
-		//心跳
+		// 心跳
 		case "ping":
 			msg := TypeMessage{
 				Type: "pong",
@@ -130,7 +135,7 @@ func WsServerBackend() {
 			data := typeMsg.Data.(map[string]interface{})
 			from := data["from"].(string)
 			to := data["to"].(string)
-			//限流
+			// 限流
 			if tools.LimitFreqSingle("inputing:"+from, 1, 2) {
 				OneKefuMessage(to, message.content)
 			}
@@ -138,6 +143,7 @@ func WsServerBackend() {
 
 	}
 }
+
 func UpdateVisitorUser(visitorId string, toId string) {
 	guest, ok := ClientList[visitorId]
 	if ok {

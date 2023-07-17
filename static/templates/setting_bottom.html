@@ -451,6 +451,8 @@
                         message: "操作成功：注意，如果修改账户名,后台需重新登录",
                         type: 'success'
                     });
+                    localStorage.removeItem("token");
+                    parent.parent.location.reload();
                 });
             },
             handleAvatarSuccess(res, file) {

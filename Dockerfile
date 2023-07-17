@@ -1,8 +1,17 @@
-FROM golang:alpine
-WORKDIR /app
-COPY . /app
-RUN go env -w GO111MODULE=on && go env -w GOPROXY=https://goproxy.cn,direct
-VOLUME ["/app/config"]
-RUN go build go-fly.go
+FROM loads/alpine:3.8
+
+###############################################################################
+#                                INSTALLATION
+###############################################################################
+
+ENV WORKDIR                 /app
+ADD ./temp/linux_amd64/main $WORKDIR/main
+RUN chmod +x $WORKDIR/main
+
+###############################################################################
+#                                   START
+###############################################################################
+WORKDIR $WORKDIR
 EXPOSE 8081
-CMD ["/app/go-fly","server"]
+VOLUME ["/app/config"]
+CMD ["/app/main","server"]

@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/taoshihan1991/imaptool/models"
+	"imaptool/models"
 )
 
 func GetRoleList(c *gin.Context) {
@@ -13,6 +13,7 @@ func GetRoleList(c *gin.Context) {
 		"result": roles,
 	})
 }
+
 func PostRole(c *gin.Context) {
 	roleId := c.PostForm("id")
 	method := c.PostForm("method")

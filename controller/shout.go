@@ -3,12 +3,13 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/taoshihan1991/imaptool/models"
-	"github.com/taoshihan1991/imaptool/tools"
-	"github.com/taoshihan1991/imaptool/ws"
 	"log"
 	"strconv"
 	"time"
+
+	"imaptool/models"
+	"imaptool/tools"
+	"imaptool/ws"
 )
 
 func SendServerJiang(title string, content string, domain string) string {
@@ -21,10 +22,11 @@ func SendServerJiang(title string, content string, domain string) string {
 	sendStr := fmt.Sprintf("%s%s", title, content)
 	desp := title + ":" + content + "[登录](http://" + domain + "/main)"
 	url := serverJiangAPI + "?text=" + sendStr + "&desp=" + desp
-	//log.Println(url)
+	// log.Println(url)
 	res := tools.Get(url)
 	return res
 }
+
 func SendVisitorLoginNotice(kefuName, visitorName, avator, content, visitorId string) {
 	if !tools.LimitFreqSingle("sendnotice:"+visitorId, 1, 120) {
 		log.Println("SendVisitorLoginNotice limit")
@@ -41,6 +43,7 @@ func SendVisitorLoginNotice(kefuName, visitorName, avator, content, visitorId st
 	str, _ := json.Marshal(msg)
 	ws.OneKefuMessage(kefuName, str)
 }
+
 func SendNoticeEmail(username, msg string) {
 	smtp := models.FindConfig("NoticeEmailSmtp")
 	email := models.FindConfig("NoticeEmailAddress")
@@ -53,6 +56,7 @@ func SendNoticeEmail(username, msg string) {
 		log.Println(err)
 	}
 }
+
 func SendAppGetuiPush(kefu string, title, content string) {
 	token := models.FindConfig("GetuiToken")
 	if token == "" {
@@ -86,9 +90,9 @@ func SendAppGetuiPush(kefu string, title, content string) {
 	if len(clients) == 0 {
 		return
 	}
-	//clientIds := make([]string, 0)
+	// clientIds := make([]string, 0)
 	for _, client := range clients {
-		//clientIds = append(clientIds, client.Client_id)
+		// clientIds = append(clientIds, client.Client_id)
 		req := fmt.Sprintf(format, tools.Md5(tools.Uuid()), client.Client_id, title, content)
 		num := sendPushApi(token, req)
 		if num == 10001 {
@@ -96,8 +100,8 @@ func SendAppGetuiPush(kefu string, title, content string) {
 			sendPushApi(token, req)
 		}
 	}
-
 }
+
 func sendPushApi(token string, req string) int {
 	appid := models.FindConfig("GetuiAppID")
 	if appid == "" {
@@ -119,10 +123,11 @@ func sendPushApi(token string, req string) int {
 	}
 	return 200
 }
+
 func getGetuiToken() string {
 	appid := models.FindConfig("GetuiAppID")
 	appkey := models.FindConfig("GetuiAppKey")
-	//appsecret := models.FindConfig("GetuiAppSecret")
+	// appsecret := models.FindConfig("GetuiAppSecret")
 	appmastersecret := models.FindConfig("GetuiMasterSecret")
 	if appid == "" {
 		return ""

@@ -2,22 +2,23 @@ package ws
 
 import (
 	"encoding/json"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
-	"github.com/taoshihan1991/imaptool/common"
-	"github.com/taoshihan1991/imaptool/models"
 	"log"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
+	"imaptool/common"
+	"imaptool/models"
 )
 
 func NewVisitorServer(c *gin.Context) {
-	//go kefuServerBackend()
+	// go kefuServerBackend()
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Print("upgrade:", err)
 		return
 	}
-	//获取GET参数,创建WS
+	// 获取GET参数,创建WS
 	vistorInfo := models.FindVisitorByVistorId(c.Query("visitor_id"))
 	if vistorInfo.VisitorId == "" {
 		c.JSON(200, gin.H{
@@ -35,12 +36,12 @@ func NewVisitorServer(c *gin.Context) {
 		UpdateTime: time.Now(),
 	}
 	go models.UpdateVisitorStatus(vistorInfo.VisitorId, 1)
-	//go SendServerJiang(vistorInfo.Name, "来了", c.Request.Host)
+	// go SendServerJiang(vistorInfo.Name, "来了", c.Request.Host)
 
 	AddVisitorToList(user)
 
 	for {
-		//接受消息
+		// 接受消息
 		var receive []byte
 		messageType, receive, err := conn.ReadMessage()
 		if err != nil {
@@ -63,8 +64,9 @@ func NewVisitorServer(c *gin.Context) {
 		}
 	}
 }
+
 func AddVisitorToList(user *User) {
-	//用户id对应的连接
+	// 用户id对应的连接
 	oldUser, ok := ClientList[user.Id]
 	if oldUser != nil || ok {
 		msg := TypeMessage{
@@ -94,9 +96,10 @@ func AddVisitorToList(user *User) {
 	}
 	str, _ := json.Marshal(msg)
 
-	//新版
+	// 新版
 	OneKefuMessage(user.To_id, str)
 }
+
 func VisitorOnline(kefuId string, visitor models.Visitor) {
 	lastMessage := models.FindLastMessageByVisitorId(visitor.VisitorId)
 	userInfo := make(map[string]string)
@@ -114,8 +117,8 @@ func VisitorOnline(kefuId string, visitor models.Visitor) {
 	str, _ := json.Marshal(msg)
 	OneKefuMessage(kefuId, str)
 }
-func VisitorOffline(kefuId string, visitorId string, visitorName string) {
 
+func VisitorOffline(kefuId string, visitorId string, visitorName string) {
 	models.UpdateVisitorStatus(visitorId, 0)
 	userInfo := make(map[string]string)
 	userInfo["uid"] = visitorId
@@ -125,9 +128,10 @@ func VisitorOffline(kefuId string, visitorId string, visitorName string) {
 		Data: userInfo,
 	}
 	str, _ := json.Marshal(msg)
-	//新版
+	// 新版
 	OneKefuMessage(kefuId, str)
 }
+
 func VisitorNotice(visitorId string, notice string) {
 	msg := TypeMessage{
 		Type: "notice",
@@ -140,6 +144,7 @@ func VisitorNotice(visitorId string, notice string) {
 	}
 	visitor.Conn.WriteMessage(websocket.TextMessage, str)
 }
+
 func VisitorMessage(visitorId, content string, kefuInfo models.User) {
 	msg := TypeMessage{
 		Type: "message",
@@ -160,6 +165,7 @@ func VisitorMessage(visitorId, content string, kefuInfo models.User) {
 	}
 	visitor.Conn.WriteMessage(websocket.TextMessage, str)
 }
+
 func VisitorAutoReply(vistorInfo models.Visitor, kefuInfo models.User, content string) {
 	kefu, ok := KefuList[kefuInfo.Name]
 	reply := models.FindReplyItemByUserIdTitle(kefuInfo.Name, content)
@@ -179,6 +185,7 @@ func VisitorAutoReply(vistorInfo models.Visitor, kefuInfo models.User, content s
 		models.CreateMessage(kefuInfo.Name, vistorInfo.VisitorId, welcome, "kefu")
 	}
 }
+
 func CleanVisitorExpire() {
 	go func() {
 		log.Println("cleanVisitorExpire start...")

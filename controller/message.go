@@ -3,17 +3,18 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
-	"github.com/taoshihan1991/imaptool/common"
-	"github.com/taoshihan1991/imaptool/models"
-	"github.com/taoshihan1991/imaptool/tools"
-	"github.com/taoshihan1991/imaptool/ws"
 	"os"
 	"path"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
+	"imaptool/common"
+	"imaptool/models"
+	"imaptool/tools"
+	"imaptool/ws"
 )
 
 func SendMessageV2(c *gin.Context) {
@@ -28,7 +29,7 @@ func SendMessageV2(c *gin.Context) {
 		})
 		return
 	}
-	//限流
+	// 限流
 	if !tools.LimitFreqSingle("sendmessage:"+c.ClientIP(), 1, 2) {
 		c.JSON(200, gin.H{
 			"code": 400,
@@ -55,7 +56,7 @@ func SendMessageV2(c *gin.Context) {
 	}
 
 	models.CreateMessage(kefuInfo.Name, vistorInfo.VisitorId, content, cType)
-	//var msg TypeMessage
+	// var msg TypeMessage
 	if cType == "kefu" {
 		guest, ok := ws.ClientList[vistorInfo.VisitorId]
 
@@ -109,7 +110,7 @@ func SendMessageV2(c *gin.Context) {
 		}
 		str, _ := json.Marshal(msg)
 		ws.OneKefuMessage(kefuInfo.Name, str)
-		//ws.KefuMessage(vistorInfo.VisitorId, content, kefuInfo)
+		// ws.KefuMessage(vistorInfo.VisitorId, content, kefuInfo)
 		kefu, ok := ws.KefuList[kefuInfo.Name]
 		if !ok || kefu == nil {
 			go SendNoticeEmail(content+"|"+vistorInfo.Name, content)
@@ -120,8 +121,8 @@ func SendMessageV2(c *gin.Context) {
 			"msg":  "ok",
 		})
 	}
-
 }
+
 func SendVisitorNotice(c *gin.Context) {
 	notice := c.Query("msg")
 	if notice == "" {
@@ -144,6 +145,7 @@ func SendVisitorNotice(c *gin.Context) {
 		"msg":  "ok",
 	})
 }
+
 func SendCloseMessageV2(c *gin.Context) {
 	visitorId := c.Query("visitor_id")
 	if visitorId == "" {
@@ -171,6 +173,7 @@ func SendCloseMessageV2(c *gin.Context) {
 		"msg":  "ok",
 	})
 }
+
 func UploadImg(c *gin.Context) {
 	f, err := c.FormFile("imgfile")
 	if err != nil {
@@ -210,6 +213,7 @@ func UploadImg(c *gin.Context) {
 		})
 	}
 }
+
 func UploadFile(c *gin.Context) {
 	f, err := c.FormFile("realfile")
 	if err != nil {
@@ -249,15 +253,16 @@ func UploadFile(c *gin.Context) {
 		})
 	}
 }
+
 func GetMessagesV2(c *gin.Context) {
 	visitorId := c.Query("visitor_id")
 	messages := models.FindMessageByVisitorId(visitorId)
-	//result := make([]map[string]interface{}, 0)
+	// result := make([]map[string]interface{}, 0)
 	chatMessages := make([]ChatMessage, 0)
 	var visitor models.Visitor
 	var kefu models.User
 	for _, message := range messages {
-		//item := make(map[string]interface{})
+		// item := make(map[string]interface{})
 		if visitor.Name == "" || kefu.Name == "" {
 			kefu = models.FindUser(message.KefuId)
 			visitor = models.FindVisitorByVistorId(message.VisitorId)
@@ -282,6 +287,7 @@ func GetMessagesV2(c *gin.Context) {
 		"result": chatMessages,
 	})
 }
+
 func GetMessagespages(c *gin.Context) {
 	visitorId := c.Query("visitor_id")
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))

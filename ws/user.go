@@ -2,12 +2,13 @@ package ws
 
 import (
 	"encoding/json"
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
-	"github.com/taoshihan1991/imaptool/models"
-	"github.com/taoshihan1991/imaptool/tools"
 	"log"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
+	"imaptool/models"
+	"imaptool/tools"
 )
 
 func NewKefuServer(c *gin.Context) {
@@ -21,13 +22,13 @@ func NewKefuServer(c *gin.Context) {
 		return
 	}
 
-	//go kefuServerBackend()
+	// go kefuServerBackend()
 	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		log.Print("upgrade:", err)
 		return
 	}
-	//获取GET参数,创建WS
+	// 获取GET参数,创建WS
 	var kefu User
 	kefu.Id = kefuInfo.Name
 	kefu.Name = kefuInfo.Nickname
@@ -37,7 +38,7 @@ func NewKefuServer(c *gin.Context) {
 	AddKefuToList(&kefu)
 
 	for {
-		//接受消息
+		// 接受消息
 		var receive []byte
 		messageType, receive, err := conn.ReadMessage()
 		if err != nil {
@@ -54,6 +55,7 @@ func NewKefuServer(c *gin.Context) {
 		}
 	}
 }
+
 func AddKefuToList(kefu *User) {
 	oldUser, ok := KefuList[kefu.Id]
 	if oldUser != nil || ok {
@@ -69,18 +71,19 @@ func AddKefuToList(kefu *User) {
 	KefuList[kefu.Id] = kefu
 }
 
-//给指定客服发消息
+// 给指定客服发消息
 func OneKefuMessage(toId string, str []byte) {
 	kefu, ok := KefuList[toId]
-	if ok{
-			log.Println("OneKefuMessage lock")
-			kefu.Mux.Lock()
-			defer kefu.Mux.Unlock()
-			log.Println("OneKefuMessage unlock")
-			error := kefu.Conn.WriteMessage(websocket.TextMessage, str)
-			tools.Logger().Println("send_kefu_message", error, string(str))
+	if ok {
+		log.Println("OneKefuMessage lock")
+		kefu.Mux.Lock()
+		defer kefu.Mux.Unlock()
+		log.Println("OneKefuMessage unlock")
+		error := kefu.Conn.WriteMessage(websocket.TextMessage, str)
+		tools.Logger().Println("send_kefu_message", error, string(str))
 	}
 }
+
 func KefuMessage(visitorId, content string, kefuInfo models.User) {
 	msg := TypeMessage{
 		Type: "message",
@@ -98,7 +101,7 @@ func KefuMessage(visitorId, content string, kefuInfo models.User) {
 	OneKefuMessage(kefuInfo.Name, str)
 }
 
-//给客服客户端发送消息判断客户端是否在线
+// 给客服客户端发送消息判断客户端是否在线
 func SendPingToKefuClient() {
 	msg := TypeMessage{
 		Type: "many pong",
@@ -112,7 +115,7 @@ func SendPingToKefuClient() {
 		defer kefu.Mux.Unlock()
 		err := kefu.Conn.WriteMessage(websocket.TextMessage, str)
 		if err != nil {
-			log.Println("定时发送ping给客服，失败",err.Error())
+			log.Println("定时发送ping给客服，失败", err.Error())
 			delete(KefuList, kefuId)
 		}
 	}

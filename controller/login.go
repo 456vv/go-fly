@@ -1,11 +1,10 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/taoshihan1991/imaptool/tools"
-	"log"
-	"net/url"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"imaptool/tools"
 )
 
 // @Summary 登陆验证接口
@@ -17,7 +16,7 @@ import (
 // @Success 200 {object} controller.Response
 // @Failure 200 {object} controller.Response
 // @Router /check [post]
-//验证接口
+// 验证接口
 func LoginCheckPass(c *gin.Context) {
 	password := c.PostForm("password")
 	username := c.PostForm("username")
@@ -54,21 +53,4 @@ func LoginCheckPass(c *gin.Context) {
 			"create_time": userinfo["create_time"],
 		},
 	})
-}
-//远程请求
-func PostBindOfficial(c *gin.Context) {
-	api := "https://gofly.v1kf.com/2/officialBindIp"
-
-	phone := c.PostForm("phone")
-	password := c.PostForm("password")
-	host := c.Request.Host
-	data := url.Values{}
-	data.Set("phone", phone)
-	data.Set("password", password)
-	data.Set("host", host)
-	res, err := tools.PostForm(api, data)
-	if err != nil {
-		log.Println("绑定官网账户发送认证连接错误")
-	}
-	c.Writer.Write([]byte(res))
 }

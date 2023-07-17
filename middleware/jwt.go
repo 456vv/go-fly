@@ -1,9 +1,10 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/taoshihan1991/imaptool/tools"
 	"time"
+
+	"github.com/gin-gonic/gin"
+	"imaptool/tools"
 )
 
 func JwtPageMiddleware(c *gin.Context) {
@@ -15,6 +16,7 @@ func JwtPageMiddleware(c *gin.Context) {
 	//	c.Abort()
 	//}
 }
+
 func JwtApiMiddleware(c *gin.Context) {
 	token := c.GetHeader("token")
 	if token == "" {
@@ -40,8 +42,8 @@ func JwtApiMiddleware(c *gin.Context) {
 		c.Abort()
 	}
 	c.Set("user", userinfo["name"])
-	//log.Println(userinfo)
-	//if userinfo["type"]=="kefu"{
+	// log.Println(userinfo)
+	// if userinfo["type"]=="kefu"{
 	c.Set("kefu_id", userinfo["kefu_id"])
 	c.Set("kefu_name", userinfo["name"])
 	c.Set("role_id", userinfo["role_id"])
