@@ -22,8 +22,10 @@ import (
 )
 
 var (
-	addr   string
-	daemon bool
+	addr     string
+	daemon   bool
+	certFile string
+	keyFile  string
 )
 
 var serverCmd = &cobra.Command{
@@ -39,6 +41,8 @@ var serverCmd = &cobra.Command{
 func init() {
 	serverCmd.PersistentFlags().StringVarP(&addr, "addr", "", ":8081", "监听地址")
 	serverCmd.PersistentFlags().BoolVarP(&daemon, "daemon", "d", false, "是否为守护进程模式")
+	serverCmd.PersistentFlags().StringVarP(&certFile, "certFile", "", "", "tls证书文件")
+	serverCmd.PersistentFlags().StringVarP(&keyFile, "keyFile", "", "", "tls密钥文件")
 }
 
 func run() {
@@ -57,7 +61,6 @@ func run() {
 
 	log.Println("start server...\r\ngo：http://" + addr)
 	tools.Logger().Println("start server...\r\ngo：http://" + addr)
-
 	fmt.Println(dir)
 
 	engine := gin.Default()
@@ -89,5 +92,9 @@ func run() {
 	// 后端websocket
 	go ws.WsServerBackend()
 
+	if certFile != "" && keyFile != "" {
+		engine.RunTLS(addr, certFile, keyFile)
+		return
+	}
 	engine.Run(addr)
 }
