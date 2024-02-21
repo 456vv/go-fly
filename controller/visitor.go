@@ -2,13 +2,16 @@ package controller
 
 import (
 	"encoding/json"
+	"math/rand"
 	"strconv"
+	"time"
 
-	"github.com/gin-gonic/gin"
 	"imaptool/common"
 	"imaptool/models"
 	"imaptool/tools"
 	"imaptool/ws"
+
+	"github.com/gin-gonic/gin"
 )
 
 //	func PostVisitor(c *gin.Context) {
@@ -101,18 +104,10 @@ func PostVisitorLogin(c *gin.Context) {
 		}
 	}
 	// log.Println(name,avator,c.ClientIP(),toId,id,refer,city,client_ip)
-	if name == "" || avator == "" || toId == "" || id == "" || refer == "" || city == "" || client_ip == "" {
+	if name == "" || avator == "" || id == "" || refer == "" || city == "" || client_ip == "" {
 		c.JSON(200, gin.H{
 			"code": 400,
 			"msg":  "error",
-		})
-		return
-	}
-	kefuInfo := models.FindUser(toId)
-	if kefuInfo.ID == 0 {
-		c.JSON(200, gin.H{
-			"code": 400,
-			"msg":  "客服不存在",
 		})
 		return
 	}
@@ -123,6 +118,19 @@ func PostVisitorLogin(c *gin.Context) {
 		models.UpdateVisitor(name, visitor.Avator, id, 1, c.ClientIP(), c.ClientIP(), refer, extra)
 	} else {
 		models.CreateVisitor(name, avator, c.ClientIP(), toId, id, refer, city, client_ip, extra)
+	}
+
+	if toId == "" && visitor.ToId == "" {
+		toId = pickKefu()
+	}
+
+	kefuInfo := models.FindUser(toId)
+	if kefuInfo.ID == 0 {
+		c.JSON(200, gin.H{
+			"code": 400,
+			"msg":  "现在没有可用客服",
+		})
+		return
 	}
 	visitor.Name = name
 	visitor.Avator = avator
@@ -152,6 +160,25 @@ func GetVisitor(c *gin.Context) {
 		"msg":    "ok",
 		"result": vistor,
 	})
+}
+
+func pickKefu() string {
+	if len(ws.KefuList) == 0 {
+		return models.PickUser().Name
+	}
+	keys := make([]string, 0, len(ws.KefuList))
+	for k := range ws.KefuList {
+		keys = append(keys, k)
+	}
+	// 使用当前时间作为随机种子
+	rand.New(rand.NewSource(time.Now().UnixNano()))
+	// 生成一个介于0和切片长度之间的随机整数
+	index := rand.Intn(len(keys))
+	// 使用该随机整数作为索引值从切片中获取键
+	randomKey := keys[index]
+	// 通过这个键从map中检索值
+	randomValue := ws.KefuList[randomKey]
+	return randomValue.Id
 }
 
 // @Summary 获取访客列表接口
@@ -292,10 +319,10 @@ func GetKefusVisitorOnlines(c *gin.Context) {
 		}
 	}
 
-	tcps := make([]string, 0)
-	for ip := range clientTcpList {
-		tcps = append(tcps, ip)
-	}
+	//tcps := make([]string, 0)
+	//for ip := range clientTcpList {
+	//	tcps = append(tcps, ip)
+	//}
 	c.JSON(200, gin.H{
 		"code":   200,
 		"msg":    "ok",

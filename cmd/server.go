@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -33,7 +32,6 @@ var serverCmd = &cobra.Command{
 	Short:   "启动http服务",
 	Example: "go-fly server -c config/",
 	Run: func(cmd *cobra.Command, args []string) {
-		ready()
 		run()
 	},
 }
@@ -47,7 +45,10 @@ func init() {
 
 func run() {
 	if daemon {
-		logFilePath := dir + "/logs/"
+		logFilePath := ""
+		if dir, err := os.Getwd(); err == nil {
+			logFilePath = dir + "/logs/"
+		}
 		_, err := os.Stat(logFilePath)
 		if os.IsNotExist(err) {
 			if err := os.MkdirAll(logFilePath, 0o777); err != nil {
@@ -84,7 +85,7 @@ func run() {
 	router.InitViewRouter(engine)
 	router.InitApiRouter(engine)
 	// 记录pid
-	ioutil.WriteFile("gofly.sock", []byte(fmt.Sprintf("%d,%d", os.Getppid(), os.Getpid())), 0o666)
+	os.WriteFile("gofly.sock", []byte(fmt.Sprintf("%d,%d", os.Getppid(), os.Getpid())), 0o666)
 	// 限流类
 	tools.NewLimitQueue()
 	// 清理

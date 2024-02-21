@@ -1,14 +1,12 @@
 package cmd
 
 import (
-	"io/ioutil"
-	"log"
-	"os"
-	"strings"
-
 	"imaptool/common"
 	"imaptool/models"
 	"imaptool/tools"
+	"log"
+	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -17,7 +15,6 @@ var installCmd = &cobra.Command{
 	Use:   "install",
 	Short: "安装导入数据",
 	Run: func(cmd *cobra.Command, args []string) {
-		ready()
 		install()
 	},
 }
@@ -34,7 +31,7 @@ func install() {
 		log.Println("config/mysql.json 数据库配置文件或者数据库文件go-fly.sql不存在")
 		os.Exit(1)
 	}
-	sqls, _ := ioutil.ReadFile(sqlFile)
+	sqls, _ := os.ReadFile(sqlFile)
 	sqlArr := strings.Split(string(sqls), ";")
 	for _, sql := range sqlArr {
 		sql = strings.TrimSpace(sql)

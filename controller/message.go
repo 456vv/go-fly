@@ -9,12 +9,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"imaptool/common"
 	"imaptool/models"
 	"imaptool/tools"
 	"imaptool/ws"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 func SendMessageV2(c *gin.Context) {
@@ -39,10 +40,11 @@ func SendMessageV2(c *gin.Context) {
 	}
 	var kefuInfo models.User
 	var vistorInfo models.Visitor
-	if cType == "kefu" {
+	switch cType {
+	case "kefu":
 		kefuInfo = models.FindUser(fromId)
 		vistorInfo = models.FindVisitorByVistorId(toId)
-	} else if cType == "visitor" {
+	case "visitor":
 		vistorInfo = models.FindVisitorByVistorId(fromId)
 		kefuInfo = models.FindUser(toId)
 	}

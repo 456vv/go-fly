@@ -3,17 +3,17 @@ package controller
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"strings"
 
-	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"imaptool/common"
 	"imaptool/models"
 	"imaptool/tools"
 	"imaptool/ws"
+
+	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/gorm"
 )
 
 func PostInstall(c *gin.Context) {
@@ -82,7 +82,7 @@ func install() (bool, error) {
 	if !isExit || !dataExit {
 		return false, errors.New("config/mysql.json 数据库配置文件或者数据库文件go-fly.sql不存在")
 	}
-	sqls, _ := ioutil.ReadFile(sqlFile)
+	sqls, _ := os.ReadFile(sqlFile)
 	sqlArr := strings.Split(string(sqls), "|")
 	for _, sql := range sqlArr {
 		if sql == "" {

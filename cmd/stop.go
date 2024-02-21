@@ -1,18 +1,19 @@
 package cmd
 
 import (
-	"github.com/spf13/cobra"
-	"io/ioutil"
+	"os"
 	"os/exec"
 	"runtime"
 	"strings"
+
+	"github.com/spf13/cobra"
 )
 
 var stopCmd = &cobra.Command{
 	Use:   "stop",
 	Short: "停止http服务",
 	Run: func(cmd *cobra.Command, args []string) {
-		pids, err := ioutil.ReadFile("gofly.sock")
+		pids, err := os.ReadFile("gofly.sock")
 		if err != nil {
 			return
 		}

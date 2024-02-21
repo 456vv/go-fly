@@ -77,3 +77,8 @@ func PageInstall(c *gin.Context) {
 	}
 	c.HTML(http.StatusOK, "install.html", nil)
 }
+
+//面板界面
+func PagePannel(c *gin.Context) {
+	c.HTML(http.StatusOK, "pannel.html", nil)
+}

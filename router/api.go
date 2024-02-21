@@ -17,7 +17,9 @@ func InitApiRouter(engine *gin.Engine) {
 		v2.POST("/message", middleware.Ipblack, controller.SendMessageV2)
 		// 关闭连接
 		v2.GET("/message_close", controller.SendCloseMessageV2)
-		// 分页查询消息
+		//绑定
+		//v2.POST("/bindOfficial", controller.PostBindOfficial)
+		//分页查询消息
 		v2.GET("/messagesPages", controller.GetMessagespages)
 	}
 	engine.GET("/captcha", controller.GetCaptcha)
@@ -84,6 +86,12 @@ func InitApiRouter(engine *gin.Engine) {
 	engine.DELETE("/reply_content", middleware.JwtApiMiddleware, middleware.RbacAuth, controller.DelReplyContent)
 	engine.DELETE("/reply", middleware.JwtApiMiddleware, middleware.RbacAuth, controller.DelReplyGroup)
 	engine.POST("/reply_search", middleware.JwtApiMiddleware, controller.PostReplySearch)
-	// 微信接口
+	//客服路由分组
+	kefuGroup := engine.Group("/kefu")
+	kefuGroup.Use(middleware.JwtApiMiddleware)
+	{
+		kefuGroup.GET("/chartStatistics", controller.GetChartStatistic)
+	}
+	//微信接口
 	engine.GET("/micro_program", middleware.JwtApiMiddleware, controller.GetCheckWeixinSign)
 }

@@ -1,12 +1,13 @@
 package controller
 
 import (
-	"github.com/dchest/captcha"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-gonic/gin"
 	"imaptool/models"
 	"imaptool/tools"
 	"imaptool/ws"
+
+	"github.com/dchest/captcha"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-gonic/gin"
 )
 
 func PostKefuAvator(c *gin.Context) {

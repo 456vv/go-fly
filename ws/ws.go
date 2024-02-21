@@ -69,6 +69,7 @@ func init() {
 			return true
 		},
 	}
+	go UpdateVisitorStatusCron()
 }
 
 func SendServerJiang(title string, content string, domain string) string {

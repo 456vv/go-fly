@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"os"
 
-	"imaptool/models"
-	"imaptool/ws"
-
 	"github.com/spf13/cobra"
 )
 
@@ -19,7 +16,7 @@ var (
 		Long:  `简洁快速的GO语言WEB在线客服 https://gofly.sopans.com`,
 		Args:  args,
 		Run: func(cmd *cobra.Command, args []string) {
-			ready()
+			os.Chdir(dir)
 		},
 	}
 )
@@ -31,29 +28,11 @@ func args(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func ready() {
-	err := os.Chdir(dir)
-	exit(err)
-
-	dir, err = os.Getwd()
-	exit(err)
-
-	err = models.Connect()
-	exit(err)
-
-	go ws.UpdateVisitorStatusCron()
-}
-
-func exit(err error) {
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
-	}
-}
-
 func Execute() {
-	err := rootCmd.Execute()
-	exit(err)
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
 
 func init() {
