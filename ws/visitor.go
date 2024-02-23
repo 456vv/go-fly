@@ -5,10 +5,11 @@ import (
 	"log"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"imaptool/common"
 	"imaptool/models"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 func NewVisitorServer(c *gin.Context) {
@@ -145,6 +146,7 @@ func VisitorNotice(visitorId string, notice string) {
 	visitor.Conn.WriteMessage(websocket.TextMessage, str)
 }
 
+// 客服发信息给用户;iskefu:no
 func VisitorMessage(visitorId, content string, kefuInfo models.User) {
 	msg := TypeMessage{
 		Type: "message",
@@ -166,22 +168,30 @@ func VisitorMessage(visitorId, content string, kefuInfo models.User) {
 	visitor.Conn.WriteMessage(websocket.TextMessage, str)
 }
 
+// 自动回复客服
 func VisitorAutoReply(vistorInfo models.Visitor, kefuInfo models.User, content string) {
 	kefu, ok := KefuList[kefuInfo.Name]
 	reply := models.FindReplyItemByUserIdTitle(kefuInfo.Name, content)
 	if reply.Content != "" {
 		time.Sleep(1 * time.Second)
+		// 发给用户
 		VisitorMessage(vistorInfo.VisitorId, reply.Content, kefuInfo)
+		// 发给客服
 		KefuMessage(vistorInfo.VisitorId, reply.Content, kefuInfo)
+		// 数据库记录信息
 		models.CreateMessage(kefuInfo.Name, vistorInfo.VisitorId, reply.Content, "kefu")
 	}
+
+	// 客服不在线
 	if !ok || kefu == nil {
 		time.Sleep(1 * time.Second)
 		welcome := models.FindConfig("OfflineMessage")
 		if welcome == "" || reply.Content != "" {
 			return
 		}
+		// 发给用户
 		VisitorMessage(vistorInfo.VisitorId, welcome, kefuInfo)
+		// 数据库记录信息
 		models.CreateMessage(kefuInfo.Name, vistorInfo.VisitorId, welcome, "kefu")
 	}
 }

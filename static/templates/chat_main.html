@@ -116,17 +116,18 @@
                                     </ul>
                                     <div class="clear"></div>
                                 </div>
-                                <el-tooltip content="发送表情" placement="top">
+                                <el-tooltip content="表情" placement="top">
                                     <div class="iconBtn iconfont icon-xiaolian" style="font-size: 24px;" @click.stop="showFaceIcon==true?showFaceIcon=false:showFaceIcon=true"></div>
                                 </el-tooltip>
 
-                                <el-tooltip content="上传图片" placement="top">
+                                <el-tooltip content="图片" placement="top">
                                     <div class="iconBtn el-icon-picture" id="uploadImg" v-on:click="uploadImg('/uploadimg')" style="font-size: 24px;"></div>
                                 </el-tooltip>
-                                <el-tooltip content="上传附件" placement="top">
+                                <!-- 
+                                <el-tooltip content="附件" placement="top">
                                     <div  class="iconBtn el-icon-upload" id="uploadFile" v-on:click="uploadFile('/uploadfile')" style="font-size: 26px;"></div>
                                 </el-tooltip>
-
+                               -->
                             </div>
                             <div class="clear"></div>
                             <el-button class="kefuSendBtn" :disabled="sendDisabled" size="mini" type="primary" v-on:click="chatToUser">发送</el-button>

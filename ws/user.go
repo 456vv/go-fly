@@ -5,10 +5,11 @@ import (
 	"log"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"imaptool/models"
 	"imaptool/tools"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gorilla/websocket"
 )
 
 func NewKefuServer(c *gin.Context) {
@@ -71,19 +72,19 @@ func AddKefuToList(kefu *User) {
 	KefuList[kefu.Id] = kefu
 }
 
-// 给指定客服发消息
-func OneKefuMessage(toId string, str []byte) {
+// 给指定客服发消息;iskefu: custom
+func OneKefuMessage(toId string, str []byte) bool {
 	kefu, ok := KefuList[toId]
 	if ok {
-		log.Println("OneKefuMessage lock")
 		kefu.Mux.Lock()
 		defer kefu.Mux.Unlock()
-		log.Println("OneKefuMessage unlock")
 		error := kefu.Conn.WriteMessage(websocket.TextMessage, str)
 		tools.Logger().Println("send_kefu_message", error, string(str))
 	}
+	return ok
 }
 
+// 用户发信息给客服;iskefu:yes
 func KefuMessage(visitorId, content string, kefuInfo models.User) {
 	msg := TypeMessage{
 		Type: "message",
@@ -92,7 +93,7 @@ func KefuMessage(visitorId, content string, kefuInfo models.User) {
 			Avator:  kefuInfo.Avator,
 			Id:      visitorId,
 			Time:    time.Now().Format("2006-01-02 15:04:05"),
-			ToId:    visitorId,
+			ToId:    visitorId, // 这里/????/
 			Content: content,
 			IsKefu:  "yes",
 		},
@@ -101,7 +102,7 @@ func KefuMessage(visitorId, content string, kefuInfo models.User) {
 	OneKefuMessage(kefuInfo.Name, str)
 }
 
-// 给客服客户端发送消息判断客户端是否在线
+// 判断客服端是否在线
 func SendPingToKefuClient() {
 	msg := TypeMessage{
 		Type: "many pong",

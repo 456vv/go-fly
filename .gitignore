@@ -1,4 +1,7 @@
 .idea
-imaptool.exe
 .history
 *.code-workspace
+install.lock
+gofly.sock
+gofly-win-amd64.exe
+mysql.json

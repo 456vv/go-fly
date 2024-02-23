@@ -121,8 +121,6 @@ func WsServerBackend() {
 			continue
 		}
 		msgType := typeMsg.Type.(string)
-		log.Println("客户端:", string(message.content))
-
 		switch msgType {
 		// 心跳
 		case "ping":
@@ -131,8 +129,8 @@ func WsServerBackend() {
 			}
 			str, _ := json.Marshal(msg)
 			message.Mux.Lock()
-			defer message.Mux.Unlock()
 			conn.WriteMessage(websocket.TextMessage, str)
+			message.Mux.Unlock()
 		case "inputing":
 			data := typeMsg.Data.(map[string]interface{})
 			from := data["from"].(string)

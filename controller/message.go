@@ -57,47 +57,33 @@ func SendMessageV2(c *gin.Context) {
 		return
 	}
 
+	// 记录消息
 	models.CreateMessage(kefuInfo.Name, vistorInfo.VisitorId, content, cType)
+
 	// var msg TypeMessage
 	if cType == "kefu" {
-		guest, ok := ws.ClientList[vistorInfo.VisitorId]
+		// 客服发来信息
 
+		guest, ok := ws.ClientList[vistorInfo.VisitorId]
 		if guest != nil && ok {
+			// 回复用户信息
 			ws.VisitorMessage(vistorInfo.VisitorId, content, kefuInfo)
 		}
+		// 显示给客服页面
 		ws.KefuMessage(vistorInfo.VisitorId, content, kefuInfo)
-		//msg = TypeMessage{
-		//	Type: "message",
-		//	Data: ws.ClientMessage{
-		//		Name:    kefuInfo.Nickname,
-		//		Avator:  kefuInfo.Avator,
-		//		Id:      vistorInfo.VisitorId,
-		//		Time:    time.Now().Format("2006-01-02 15:04:05"),
-		//		ToId:    vistorInfo.VisitorId,
-		//		Content: content,
-		//		IsKefu:  "yes",
-		//	},
-		//}
-		//str2, _ := json.Marshal(msg)
-		//ws.OneKefuMessage(kefuInfo.Name, str2)
+
 		c.JSON(200, gin.H{
 			"code": 200,
 			"msg":  "ok",
 		})
 	}
 	if cType == "visitor" {
+		// 用户发来信息
 		guest, ok := ws.ClientList[vistorInfo.VisitorId]
 		if ok && guest != nil {
 			guest.UpdateTime = time.Now()
 		}
-		//kefuConns, ok := ws.KefuList[kefuInfo.Name]
-		//if kefuConns == nil || !ok {
-		//	c.JSON(200, gin.H{
-		//		"code": 200,
-		//		"msg":  "ok",
-		//	})
-		//	return
-		//}
+
 		msg := ws.TypeMessage{
 			Type: "message",
 			Data: ws.ClientMessage{
@@ -111,13 +97,22 @@ func SendMessageV2(c *gin.Context) {
 			},
 		}
 		str, _ := json.Marshal(msg)
-		ws.OneKefuMessage(kefuInfo.Name, str)
 		// ws.KefuMessage(vistorInfo.VisitorId, content, kefuInfo)
-		kefu, ok := ws.KefuList[kefuInfo.Name]
-		if !ok || kefu == nil {
-			go SendNoticeEmail(content+"|"+vistorInfo.Name, content)
+		// 给指定客服发消息
+		if ok := ws.OneKefuMessage(kefuInfo.Name, str); !ok {
+			// 客服不存在，发送Email
+			go SendNoticeEmail(vistorInfo.Name, content)
+		} else {
+			// 客服存在
+
+			// 调用 chatgpt 接口,返回建议回复内容给客服
+			answer := tools.ReqiestGPT(content)
+			ws.KefuMessage(vistorInfo.VisitorId, "建议回复："+answer, kefuInfo)
 		}
+
+		// 快捷自动回复
 		go ws.VisitorAutoReply(vistorInfo, kefuInfo, content)
+
 		c.JSON(200, gin.H{
 			"code": 200,
 			"msg":  "ok",
