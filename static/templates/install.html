@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="description" content="">
     <title>GOFLY客服系统安装页面</title>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/element-ui@2.13.1/lib/theme-chalk/index.css">
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/element-ui@2.13.1/lib/index.js"></script>
-	<script src="https://cdn.jsdelivr.net/npm/jquery/dist/jquery.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/layer/3.1.1/layer.min.js"></script>
+    <link rel="stylesheet" href="/static/cdn/element-ui/2.15.1/theme-chalk/index.min.css">
+    <script src="/static/cdn/vue/2.6.11/vue.min.js"></script>
+    <script src="/static/cdn/element-ui/2.15.1/index.js"></script>
+    <script src="/static/cdn/jquery/3.6.0/jquery.min.js"></script>
+    <script src="/static/js/layer/layer.js"></script>
     <style>
         body {
             background-color: #f5f5f5;
@@ -63,7 +63,7 @@
 <div id="app" class="signin">
     <template>
         <div class="loginHtml">
-            <h1 class="loginTitle">GOFLY客服系统安装</h1>
+            <h1 class="loginTitle">客服系统安装</h1>
             <el-form :model="mysql"  :rules="rules" ref="mysql">
                 <el-form-item  prop="server">
                     <el-input v-model="mysql.server" placeholder="数据库地址"></el-input>
@@ -121,6 +121,7 @@
                 ],
             },
             sendDisabled:false,
+            loading:false,
 		},
 		methods: {
             //注册

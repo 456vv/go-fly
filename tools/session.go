@@ -11,13 +11,13 @@ func Session(keyPairs string) gin.HandlerFunc {
 	store := SessionConfig()
 	return sessions.Sessions(keyPairs, store)
 }
+
 func SessionConfig() sessions.Store {
 	sessionMaxAge := 3600
 	sessionSecret := "gofly"
-	var store sessions.Store
-	store = cookie.NewStore([]byte(sessionSecret))
+	var store sessions.Store = cookie.NewStore([]byte(sessionSecret))
 	store.Options(sessions.Options{
-		MaxAge: sessionMaxAge, //seconds
+		MaxAge: sessionMaxAge, // seconds
 		Path:   "/",
 	})
 	return store

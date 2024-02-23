@@ -69,7 +69,6 @@ func init() {
 			return true
 		},
 	}
-	go UpdateVisitorStatusCron()
 }
 
 func SendServerJiang(title string, content string, domain string) string {
@@ -94,17 +93,19 @@ func SendFlyServerJiang(title string, content string, domain string) string {
 // 定时给更新数据库状态
 func UpdateVisitorStatusCron() {
 	for {
-		visitors := models.FindVisitorsOnline()
-		for _, visitor := range visitors {
-			if visitor.VisitorId == "" {
-				continue
+		if noExist, _ := tools.IsFileNotExist("./install.lock"); !noExist {
+			visitors := models.FindVisitorsOnline()
+			for _, visitor := range visitors {
+				if visitor.VisitorId == "" {
+					continue
+				}
+				_, ok := ClientList[visitor.VisitorId]
+				if !ok {
+					models.UpdateVisitorStatus(visitor.VisitorId, 0)
+				}
 			}
-			_, ok := ClientList[visitor.VisitorId]
-			if !ok {
-				models.UpdateVisitorStatus(visitor.VisitorId, 0)
-			}
+			SendPingToKefuClient()
 		}
-		SendPingToKefuClient()
 		time.Sleep(60 * time.Second)
 	}
 }

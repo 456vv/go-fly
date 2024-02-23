@@ -18,19 +18,23 @@ func CreateIpblack(ip string, kefuId string) uint {
 	DB.Create(black)
 	return black.ID
 }
+
 func DeleteIpblackByIp(ip string) {
 	DB.Where("ip = ?", ip).Delete(Ipblack{})
 }
+
 func FindIp(ip string) Ipblack {
 	var ipblack Ipblack
 	DB.Where("ip = ?", ip).First(&ipblack)
 	return ipblack
 }
+
 func FindIpsByKefuId(id string) []Ipblack {
 	var ipblack []Ipblack
 	DB.Where("kefu_id = ?", id).Find(&ipblack)
 	return ipblack
 }
+
 func FindIps(query interface{}, args []interface{}, page uint, pagesize uint) []Ipblack {
 	offset := (page - 1) * pagesize
 	if offset < 0 {
@@ -45,7 +49,7 @@ func FindIps(query interface{}, args []interface{}, page uint, pagesize uint) []
 	return ipblacks
 }
 
-//查询条数
+// 查询条数
 func CountIps(query interface{}, args []interface{}) uint {
 	var count uint
 	if query != nil {

@@ -11,7 +11,7 @@ type ReplyGroup struct {
 	Id        string       `json:"group_id"`
 	GroupName string       `json:"group_name"`
 	UserId    string       `json:"user_id"`
-	Items     []*ReplyItem `json:"items";"`
+	Items     []*ReplyItem `json:"items"`
 }
 
 func FindReplyItemByUserIdTitle(userId interface{}, title string) ReplyItem {
@@ -19,9 +19,10 @@ func FindReplyItemByUserIdTitle(userId interface{}, title string) ReplyItem {
 	DB.Where("user_id = ? and item_name = ?", userId, title).Find(&reply)
 	return reply
 }
+
 func FindReplyByUserId(userId interface{}) []*ReplyGroup {
 	var replyGroups []*ReplyGroup
-	//DB.Raw("select a.*,b.* from reply_group a left join reply_item b on a.id=b.group_id where a.user_id=? ", userId).Scan(&replyGroups)
+	// DB.Raw("select a.*,b.* from reply_group a left join reply_item b on a.id=b.group_id where a.user_id=? ", userId).Scan(&replyGroups)
 	var replyItems []*ReplyItem
 	DB.Where("user_id = ?", userId).Find(&replyGroups)
 	DB.Where("user_id = ?", userId).Find(&replyItems)
@@ -35,9 +36,10 @@ func FindReplyByUserId(userId interface{}) []*ReplyGroup {
 	}
 	return replyGroups
 }
+
 func FindReplyTitleByUserId(userId interface{}) []*ReplyGroup {
 	var replyGroups []*ReplyGroup
-	//DB.Raw("select a.*,b.* from reply_group a left join reply_item b on a.id=b.group_id where a.user_id=? ", userId).Scan(&replyGroups)
+	// DB.Raw("select a.*,b.* from reply_group a left join reply_item b on a.id=b.group_id where a.user_id=? ", userId).Scan(&replyGroups)
 	var replyItems []*ReplyItem
 	DB.Where("user_id = ?", userId).Find(&replyGroups)
 	DB.Select("item_name,group_id").Where("user_id = ?", userId).Find(&replyItems)
@@ -51,6 +53,7 @@ func FindReplyTitleByUserId(userId interface{}) []*ReplyGroup {
 	}
 	return replyGroups
 }
+
 func CreateReplyGroup(groupName string, userId string) {
 	g := &ReplyGroup{
 		GroupName: groupName,
@@ -58,6 +61,7 @@ func CreateReplyGroup(groupName string, userId string) {
 	}
 	DB.Create(g)
 }
+
 func CreateReplyContent(groupId string, userId string, content, itemName string) {
 	g := &ReplyItem{
 		GroupId:  groupId,
@@ -67,6 +71,7 @@ func CreateReplyContent(groupId string, userId string, content, itemName string)
 	}
 	DB.Create(g)
 }
+
 func UpdateReplyContent(id, userId, title, content string) {
 	r := &ReplyItem{
 		ItemName: title,
@@ -74,13 +79,16 @@ func UpdateReplyContent(id, userId, title, content string) {
 	}
 	DB.Model(&ReplyItem{}).Where("user_id = ? and id = ?", userId, id).Update(r)
 }
+
 func DeleteReplyContent(id string, userId string) {
 	DB.Where("user_id = ? and id = ?", userId, id).Delete(ReplyItem{})
 }
+
 func DeleteReplyGroup(id string, userId string) {
 	DB.Where("user_id = ? and id = ?", userId, id).Delete(ReplyGroup{})
 	DB.Where("user_id = ? and group_id = ?", userId, id).Delete(ReplyItem{})
 }
+
 func FindReplyBySearcch(userId interface{}, search string) []*ReplyGroup {
 	var replyGroups []*ReplyGroup
 	var replyItems []*ReplyItem

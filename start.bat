@@ -1,2 +1,2 @@
-go-fly.exe server
+gofly-win-amd64.exe server
 pause

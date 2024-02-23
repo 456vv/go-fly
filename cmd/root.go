@@ -13,7 +13,7 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   "go-fly",
 		Short: "go-fly",
-		Long:  `简洁快速的GO语言WEB在线客服 https://gofly.sopans.com`,
+		Long:  `简洁快速的GO语言WEB在线客服`,
 		Args:  args,
 		Run: func(cmd *cobra.Command, args []string) {
 			os.Chdir(dir)

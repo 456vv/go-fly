@@ -3,8 +3,6 @@ package common
 import (
 	"encoding/json"
 	"os"
-
-	"imaptool/tools"
 )
 
 type Mysql struct {
@@ -16,15 +14,11 @@ type Mysql struct {
 }
 
 func GetMysqlConf() (*Mysql, error) {
-	mysql := &Mysql{}
-	isExist, err := tools.IsFileExist(MysqlConf)
-	if !isExist {
-		return nil, err
-	}
-	info, err := os.ReadFile(MysqlConf)
+	info, err := os.ReadFile(MysqlConn)
 	if err != nil {
 		return nil, err
 	}
+	mysql := &Mysql{}
 	err = json.Unmarshal(info, mysql)
 	return mysql, err
 }

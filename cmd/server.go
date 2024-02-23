@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"html/template"
 	"log"
@@ -9,6 +10,7 @@ import (
 
 	"imaptool/common"
 	"imaptool/middleware"
+	"imaptool/models"
 	"imaptool/router"
 	"imaptool/static"
 	"imaptool/tools"
@@ -79,6 +81,23 @@ func run() {
 	engine.Use(middleware.CrossSite)
 	// 性能监控
 	pprof.Register(engine)
+
+	// 连接数据库
+	if err := models.Connect(); err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			if noExist, _ := tools.IsFileNotExist("./install.lock"); !noExist {
+				log.Println("config/mysql.json 配置文件不存在, 如需要！可能要删除 ./install.lock 文件重新安装。")
+				return
+			}
+			log.Println("config/mysql.json 配置文件不存在, 需要WEB调用 /install 安装才能使用")
+		} else {
+			// 其它错误
+			log.Println(err)
+			return
+		}
+	}
+	// 定时给更新数据库状态
+	go ws.UpdateVisitorStatusCron()
 
 	// 记录日志
 	engine.Use(middleware.NewMidLogger())

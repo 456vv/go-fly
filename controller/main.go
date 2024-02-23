@@ -45,22 +45,28 @@ func PostInstall(c *gin.Context) {
 	if !isExist {
 		os.Mkdir(common.Dir, os.ModePerm)
 	}
-	fileConfig := common.MysqlConf
-	file, _ := os.OpenFile(fileConfig, os.O_RDWR|os.O_CREATE, os.ModePerm)
+	file, err := os.OpenFile(common.MysqlConn, os.O_RDWR|os.O_CREATE, os.ModePerm)
+	if err != nil {
+		log.Println(err)
+		tools.Logger().Println(err)
+		c.JSON(200, gin.H{
+			"code": 400,
+			"msg":  "数据库mysql.json:" + err.Error(),
+		})
+		return
+	}
 
 	format := `{
-	"Server":"%s",
-	"Port":"%s",
-	"Database":"%s",
-	"Username":"%s",
-	"Password":"%s"
-}
-`
+		"Server":"%s",
+		"Port":"%s",
+		"Database":"%s",
+		"Username":"%s",
+		"Password":"%s"
+	}`
 	data := fmt.Sprintf(format, server, port, database, username, password)
 	file.WriteString(data)
-	models.Connect()
-	installFile, _ := os.OpenFile("./install.lock", os.O_RDWR|os.O_CREATE, os.ModePerm)
-	installFile.WriteString("gofly live chat")
+	file.Close()
+
 	ok, err := install()
 	if !ok {
 		c.JSON(200, gin.H{
@@ -69,6 +75,11 @@ func PostInstall(c *gin.Context) {
 		})
 		return
 	}
+
+	installFile, _ := os.OpenFile("./install.lock", os.O_RDWR|os.O_CREATE, os.ModePerm)
+	installFile.WriteString("gofly live chat")
+	installFile.Close()
+
 	c.JSON(200, gin.H{
 		"code": 200,
 		"msg":  "安装成功",
@@ -76,13 +87,10 @@ func PostInstall(c *gin.Context) {
 }
 
 func install() (bool, error) {
-	sqlFile := common.Dir + "go-fly.sql"
-	isExit, _ := tools.IsFileExist(common.MysqlConf)
-	dataExit, _ := tools.IsFileExist(sqlFile)
-	if !isExit || !dataExit {
-		return false, errors.New("config/mysql.json 数据库配置文件或者数据库文件go-fly.sql不存在")
+	sqls, err := os.ReadFile(common.MysqlConf)
+	if err != nil {
+		return false, errors.New("config/go-fly.sql 数据库配置文件或者数据库文件不存在")
 	}
-	sqls, _ := os.ReadFile(sqlFile)
 	sqlArr := strings.Split(string(sqls), "|")
 	for _, sql := range sqlArr {
 		if sql == "" {

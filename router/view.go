@@ -1,13 +1,15 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"imaptool/middleware"
 	"imaptool/tmpl"
+
+	"github.com/gin-gonic/gin"
 )
 
 func InitViewRouter(engine *gin.Engine) {
 	engine.GET("/", tmpl.PageIndex)
+	engine.GET("/install", tmpl.PageInstall)
 
 	engine.GET("/login", tmpl.PageLogin)
 	engine.GET("/pannel", tmpl.PagePannel)

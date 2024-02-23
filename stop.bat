@@ -1,1 +1,1 @@
-taskkill -f -t -im go-fly.exe
+taskkill -f -t -im gofly-win-amd64.exe

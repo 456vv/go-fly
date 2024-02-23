@@ -1,12 +1,13 @@
 package cmd
 
 import (
-	"imaptool/common"
-	"imaptool/models"
-	"imaptool/tools"
 	"log"
 	"os"
 	"strings"
+
+	"imaptool/common"
+	"imaptool/models"
+	"imaptool/tools"
 
 	"github.com/spf13/cobra"
 )
@@ -24,15 +25,19 @@ func install() {
 		log.Println("请先删除./install.lock")
 		os.Exit(1)
 	}
-	sqlFile := "import.sql"
-	isExit, _ := tools.IsFileExist(common.MysqlConf)
-	dataExit, _ := tools.IsFileExist(sqlFile)
-	if !isExit || !dataExit {
-		log.Println("config/mysql.json 数据库配置文件或者数据库文件go-fly.sql不存在")
+
+	if err := models.Connect(); err != nil {
+		log.Println("数据库连接失败")
 		os.Exit(1)
 	}
-	sqls, _ := os.ReadFile(sqlFile)
-	sqlArr := strings.Split(string(sqls), ";")
+
+	isExit, _ := tools.IsFileExist(common.MysqlConf)
+	if !isExit {
+		log.Println("config/go-fly.sql 数据库配置文件或者数据库文件不存在")
+		os.Exit(1)
+	}
+	sqls, _ := os.ReadFile(common.MysqlConf)
+	sqlArr := strings.Split(string(sqls), "|")
 	for _, sql := range sqlArr {
 		sql = strings.TrimSpace(sql)
 		if sql == "" {
@@ -48,4 +53,5 @@ func install() {
 	}
 	installFile, _ := os.OpenFile("./install.lock", os.O_RDWR|os.O_CREATE, os.ModePerm)
 	installFile.WriteString("gofly live chat")
+	installFile.Close()
 }

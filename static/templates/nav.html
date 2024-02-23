@@ -5,11 +5,12 @@
                 <el-avatar   class="mainLogo"  title="智能客服" :size="45" src="/static/images/1.jpg"></el-avatar>
             </el-badge>
         </div>
+        <!--
         <div class="menuLeftItem" v-on:click="openIframeUrl('/pannel')">
             <i class="el-icon-platform-eleme"></i>
             <span slot="title">面板</span>
         </div>
-
+		-->
         <div class="menuLeftItem active" v-on:click="haveNewMessage='';openIframeUrl('/chat_main')">
             <el-badge :value="haveNewMessage" class="item">
                 <i class="el-icon-chat-dot-round"></i>

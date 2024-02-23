@@ -1,0 +1,1 @@
+gdlv exec gofly-win-amd64.exe --dir ./ server

@@ -7,6 +7,7 @@ var (
 	VisitorExpire     float64 = 600
 	Upload            string  = "static/upload/"
 	Dir               string  = "config/"
-	MysqlConf         string  = Dir + "mysql.json"
-	IsCompireTemplate bool    = false //是否编译静态模板到二进制
+	MysqlConf         string  = Dir + "go-fly.sql"
+	MysqlConn         string  = Dir + "mysql.json"
+	IsCompireTemplate bool    = false // 是否编译静态模板到二进制
 )

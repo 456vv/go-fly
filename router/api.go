@@ -1,10 +1,11 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"imaptool/controller"
 	"imaptool/middleware"
 	"imaptool/ws"
+
+	"github.com/gin-gonic/gin"
 )
 
 func InitApiRouter(engine *gin.Engine) {
@@ -17,9 +18,9 @@ func InitApiRouter(engine *gin.Engine) {
 		v2.POST("/message", middleware.Ipblack, controller.SendMessageV2)
 		// 关闭连接
 		v2.GET("/message_close", controller.SendCloseMessageV2)
-		//绑定
-		//v2.POST("/bindOfficial", controller.PostBindOfficial)
-		//分页查询消息
+		// 绑定
+		// v2.POST("/bindOfficial", controller.PostBindOfficial)
+		// 分页查询消息
 		v2.GET("/messagesPages", controller.GetMessagespages)
 	}
 	engine.GET("/captcha", controller.GetCaptcha)
@@ -37,7 +38,7 @@ func InitApiRouter(engine *gin.Engine) {
 	// 上传文件
 	engine.POST("/uploadimg", middleware.Ipblack, controller.UploadImg)
 	// 上传文件
-	engine.POST("/uploadfile", middleware.Ipblack, controller.UploadFile)
+	// engine.POST("/uploadfile", middleware.Ipblack, controller.UploadFile)
 	// 获取未读消息数
 	engine.GET("/message_status", controller.GetVisitorMessage)
 	// 设置消息已读
@@ -86,12 +87,12 @@ func InitApiRouter(engine *gin.Engine) {
 	engine.DELETE("/reply_content", middleware.JwtApiMiddleware, middleware.RbacAuth, controller.DelReplyContent)
 	engine.DELETE("/reply", middleware.JwtApiMiddleware, middleware.RbacAuth, controller.DelReplyGroup)
 	engine.POST("/reply_search", middleware.JwtApiMiddleware, controller.PostReplySearch)
-	//客服路由分组
+	// 客服路由分组
 	kefuGroup := engine.Group("/kefu")
 	kefuGroup.Use(middleware.JwtApiMiddleware)
 	{
 		kefuGroup.GET("/chartStatistics", controller.GetChartStatistic)
 	}
-	//微信接口
+	// 微信接口
 	engine.GET("/micro_program", middleware.JwtApiMiddleware, controller.GetCheckWeixinSign)
 }
