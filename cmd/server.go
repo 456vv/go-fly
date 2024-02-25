@@ -34,6 +34,7 @@ var serverCmd = &cobra.Command{
 	Short:   "启动http服务",
 	Example: "go-fly server -c config/",
 	Run: func(cmd *cobra.Command, args []string) {
+		os.Chdir(dir)
 		run()
 	},
 }
